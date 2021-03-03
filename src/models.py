@@ -8,98 +8,131 @@ from eralchemy import render_er
 
 Base = declarative_base()
 
-# class Person(Base):
-#     __tablename__ = 'person'
-#     # Here we define columns for the table person
-#     # Notice that each column is also a normal Python instance attribute.
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String(250), nullable=False)
-
-# class Address(Base):
-#     __tablename__ = 'address'
-#     # Here we define columns for the table address.
-#     # Notice that each column is also a normal Python instance attribute.
-#     id = Column(Integer, primary_key=True)
-#     street_name = Column(String(250))
-#     street_number = Column(String(250))
-#     post_code = Column(String(250), nullable=False)
-#     person_id = Column(Integer, ForeignKey('person.id'))
-#     person = relationship(Person)
-
-# Tablas
 # Tabla PLANETAS
-class Planets(Base):
-    __tablename__ = "planets"
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    url = Column(String, nullable=False)
+class Planet(db.Model):
+    __tablename__ = "planet"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    url = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    diameter = db.Column(db.Integer)
+    rotation_period = db.Column(db.Integer)
+    orbital_period = db.Column(db.Integer)
+    gravity = db.Column(db.String)
+    population = db.Column(db.Integer)
+    climate = db.Column(db.String)
+    terrain = db.Column(db.String)
+    surface_water = db.Column(db.Integer)
+    created = db.Column(db.Date)
+    edited = db.Column(db.Date)
+    photo = db.Column(db.String)
+    liked_by_users = relationship("Fav_Planet", backref="planet")
 
-# Tabla PLANETAS DETALLADOS
-class PlanetsFocused(Base):
-    __tablename__ = "planets_focused"
-    id = Column(Integer, primary_key=True)
-    planets_id = Column(Integer, ForeignKey('planets.id'))
-    name = Column(String)
-    url = Column(String)
-    description = Column(String)
-    diameter = Column(Integer)
-    rotation_period = Column(Integer)
-    orbital_period = Column(Integer)
-    gravity = Column(String)
-    population = Column(Integer)
-    climate = Column(String)
-    terrain = Column(String)
-    surface_water = Column(Integer)
-    created = Column(Date)
-    edited = Column(Date)
-    planets = relationship("Planets")
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "url": f"https://3000-peach-spoonbill-64imvwko.ws-us03.gitpod.io/{self.id}",
+            "description": self.description,
+            "diameter": self.diameter,
+            "rotation_period": self.rotation_period,
+            "orbital_period": self.orbital_period,
+            "gravity": self.gravity,
+            "population": self.population,
+            "climate": self.climate,
+            "terrain": self.terrain,
+            "surface_water": self.surface_water,
+            "created": self.created,
+            "edited": self.edited,
+            "photo": self.photo
+        }
 
-# Tabla PERSONAJES
-class Characters(Base):
+#Tabla PERSONAJES
+class Characters(db.Model):
     __tablename__ = "characters"
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    url = Column(String, nullable=False)
-    child_charactersFocused = relationship("CharactersFocused")
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    url = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    height = db.Column(db.Integer)
+    mass = db.Column(db.Integer)
+    hair_color = db.Column(db.String)
+    skin_color = db.Column(db.String)
+    eye_color = db.Column(db.String)
+    birth_year = db.Column(db.Date)
+    gender = db.Column(db.String)
+    created = db.Column(db.Date)
+    edited = db.Column(db.Date)
+    photo = db.Column(db.String)
+    liked_by_users = relationship("Fav_Characters", backref="characters")
 
-#  Tabla PERSONAJES DETALLADOS
-class CharactersFocused(Base):
-    __tablename__ = "characters_focused"
-    id = Column(Integer, primary_key=True)
-    character_id = Column(Integer, ForeignKey('characters.id'))
-    name = Column(String)
-    url = Column(String)
-    description = Column(String)
-    height = Column(Integer)
-    mass = Column(Integer)
-    hair_color = Column(String)
-    skin_color = Column(String)
-    eye_color = Column(String)
-    birth_year = Column(Date)
-    gender = Column(String)
-    created = Column(Date)
-    edited = Column(Date)
-    characters = relationship("Characters")
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "url": f"https://3000-peach-spoonbill-64imvwko.ws-us03.gitpod.io/{self.id}",
+             "description": self.description,
+             "height": self.height,
+             "mass": self.mass,
+             "hair_color": self.hair_color,
+             "skin_color": self.skin_color,
+             "eye_color": self.eye_color,
+             "birth_year": self.birth_year,
+             "gender": self.gender,
+             "created": self.created,
+             "edited": self.edited,
+             "photo": self.photo
+        }
+
+#Tabla FAVORITOS PLANETAS
+class Fav_Planet(db.Model):
+    __tablename__ = "fav_planet"
+    id_FavPlanets = db.Column(db.Integer, primary_key=True)
+    id_Planets = db.Column(db.Integer, ForeignKey("planet.id"))
+    id_Username = db.Column(db.Integer, ForeignKey("user_table.uid"))
+
+    def serialize(self):
+        return {
+            "id_FavPlanets": self.id_FavPlanets,
+            "id_Planets": self.id_Planets,
+            "id_Username": self.id_Username
+        }
+
+#Tabla FAVORITOS PERSONAJES
+class Fav_Character(db.Model):
+    __tablename__ = "fav_character"
+    id_FavCharacters = db.Column(db.Integer, primary_key=True)
+    id_Character = db.Column(db.Integer, ForeignKey("characters.id"))
+    id_Username = db.Column(db.Integer, ForeignKey("user_table.uid"))
+
+    def serialize(self):
+        return {
+            "id_FavCharacters": self.id_FavCharacters,
+            "id_Characters": self.id_Characterss,
+            "id_Username": self.id_Username
+        }
 
 # Tabla USUARIOS
-class User(Base):
+class User(db.Model):
     __tablename__ = "user_table"
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=False)
-    password = Column(String, nullable=False)
-    prophile_photo = Column(String)
+    uid = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    prophile_photo = db.Column(db.String)
+    favorite_planet = relationship("Fav_Planet", backref="user")
+    favorite_character = relationship("Fav_Planet", backref="user")
 
-# Tabla FAVORITOS
-class Favorites(Base):
-    __tablename__ = "favorites_table"
-    id = Column(Integer, primary_key=True) 
-    id_Planets = Column(Integer, ForeignKey('planets.id'))
-    id_People = Column(Integer, ForeignKey('characters.id'))
-    id_Username = Column(Integer, ForeignKey('user_table.id'))
-    planets = relationship("Planets")
-    characters = relationship("Characters")
-    user_table = relationship("User")
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "prophile_photo": self.prophile_photo
+        }
 
 
     def to_dict(self):
